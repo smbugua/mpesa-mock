@@ -88,8 +88,9 @@ class Handler(BaseHTTPRequestHandler):
         length = int(self.headers.get("Content-Length", "0"))
         body = self.rfile.read(length) if length else b""
         ts = datetime.now(timezone.utc).strftime("%H:%M:%S")
-        print(f"\n[{ts}]  POST {self.path}")
+        print(f"\n[{ts}]  POST {self.path}", flush=True)
         pretty_print(body)
+        sys.stdout.flush()
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.end_headers()

@@ -29,30 +29,80 @@ and lets you trigger any failure mode by changing the test phone number.
 
 ## 60-second start
 
+Three terminals. Copy, paste, see a callback land in your code in under a minute.
+
+### Terminal 1 — start `mpesa-mock`
+
 ```bash
-# 1. start the mock
-npx mpesa-mock
+npx mpesa-mock --delay 2000
+```
 
-# 2. (another terminal) get a token
-curl "http://localhost:4000/oauth/v1/generate?grant_type=client_credentials" \
-  -u "test_key:test_secret"
-# → {"access_token":"...","expires_in":"3599"}
+You'll see a banner with the base URL (`http://localhost:4000`) and a link to
+the live dashboard. Leave this running.
 
-# 3. push to a phone
+### Terminal 2 — start a callback receiver
+
+mpesa-mock POSTs the transaction result to whatever URL you pass as
+`CallBackURL`. If you don't have an app stood up yet, use the bundled
+stdlib-only Python receiver:
+
+```bash
+# clone or download examples/callback-sink/callback_sink.py, then:
+python3 callback_sink.py            # listens on :5000
+```
+
+> 💡 In your real app, this is just your `/api/mpesa/callback` route handler —
+> see [examples/](./examples/) for Express, Next.js, and Flask versions.
+
+### Terminal 3 — generate a token + push to a phone
+
+```bash
+# 1. get an OAuth token (any consumer_key:consumer_secret works in mock)
+TOKEN=$(curl -s "http://localhost:4000/oauth/v1/generate?grant_type=client_credentials" \
+  -u "test_key:test_secret" \
+  | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
+echo "token: $TOKEN"
+
+# 2. push to a phone — note CallBackURL points at the sink in Terminal 2
 curl -X POST http://localhost:4000/mpesa/stkpush/v1/processrequest \
-  -H "Authorization: Bearer <token>" -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
   -d '{
     "BusinessShortCode":"174379","Password":"x","Timestamp":"20260513120000",
     "TransactionType":"CustomerPayBillOnline","Amount":10,
     "PartyA":"254712345600","PartyB":"174379","PhoneNumber":"254712345600",
-    "CallBackURL":"https://yourapp.test/cb",
+    "CallBackURL":"http://localhost:5000/cb",
     "AccountReference":"INV1","TransactionDesc":"order"
   }'
 # → {"MerchantRequestID":"...","CheckoutRequestID":"ws_CO_...","ResponseCode":"0",...}
 ```
 
-Your `CallBackURL` will receive the Daraja-shaped `stkCallback` body ~8 seconds
-later. Open the live dashboard at <http://localhost:4000/__mock__/dashboard>.
+Within ~2 seconds, **Terminal 2** prints:
+
+```
+[14:23:01]  POST /cb
+✅ STK CALLBACK  code=0  'The service request is processed successfully.'
+   receipt:  NMDGS5L9YJ
+   amount:   10
+   phone:    254712345600
+   txn time: 20260513142301
+```
+
+That's the full Daraja round-trip — exactly what your production app will
+receive when it talks to the real Safaricom sandbox or live API.
+
+### Step 4 — watch it in the dashboard
+
+Open **<http://localhost:4000/__mock__/dashboard>** in your browser.
+
+You'll see a live table of every transaction with kind, phone, amount, state,
+callback delivery attempts, and age. It auto-refreshes via Server-Sent Events —
+no reload needed. Re-run the curl from Terminal 3 and watch a new row appear
+instantly.
+
+Try changing the last two digits of `PhoneNumber` and watch the state column
+change colour — `…01` cancels, `…02` fails with insufficient funds, `…04`
+never fires a callback at all (the [failure mode table](#failure-modes--phone-suffix-convention)
+has the full list).
 
 ## Failure modes — phone-suffix convention
 
