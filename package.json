@@ -1,6 +1,6 @@
 {
   "name": "mpesa-mock",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Local M-Pesa Daraja API emulator. Stop fighting the sandbox.",
   "keywords": [
     "mpesa",
