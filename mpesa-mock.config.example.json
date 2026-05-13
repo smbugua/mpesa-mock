@@ -1,0 +1,12 @@
+{
+  "defaultCallbackDelayMs": 2000,
+  "scenarios": {
+    "254712345000": "success",
+    "254712345001": "user_cancelled",
+    "254700000000": "insufficient_funds"
+  },
+  "webhookRetry": {
+    "attempts": 3,
+    "backoffMs": 1000
+  }
+}

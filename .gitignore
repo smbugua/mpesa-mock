@@ -1,0 +1,28 @@
+node_modules/
+dist/
+coverage/
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+
+# SQLite persistence files created by --persist
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Local recordings
+transactions*.json
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# OS
+Thumbs.db
+
+# LAUNCH materials (drafted but not committed to main per spec)
+LAUNCH.md

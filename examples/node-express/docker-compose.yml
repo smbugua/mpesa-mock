@@ -1,0 +1,12 @@
+services:
+  mpesa-mock:
+    image: ghcr.io/smbugua/mpesa-mock:latest
+    ports: ["4000:4000"]
+    environment:
+      MPESA_MOCK_DELAY: "1000"
+  app:
+    build: .
+    ports: ["3000:3000"]
+    depends_on: [mpesa-mock]
+    environment:
+      PORT: "3000"

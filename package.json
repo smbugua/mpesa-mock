@@ -1,0 +1,82 @@
+{
+  "name": "mpesa-mock",
+  "version": "0.1.0",
+  "description": "Local M-Pesa Daraja API emulator. Stop fighting the sandbox.",
+  "keywords": [
+    "mpesa",
+    "daraja",
+    "safaricom",
+    "mock",
+    "emulator",
+    "sandbox",
+    "kenya",
+    "stk-push",
+    "testing",
+    "developer-tools"
+  ],
+  "homepage": "https://github.com/smbugua/mpesa-mock#readme",
+  "bugs": "https://github.com/smbugua/mpesa-mock/issues",
+  "license": "MIT",
+  "author": "Simon Mbugua <simon@velocitystack.xyz>",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "bin": {
+    "mpesa-mock": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smbugua/mpesa-mock.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "tsx watch src/cli.ts",
+    "build": "tsup",
+    "start": "node dist/cli.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "commander": "^12.1.0",
+    "hono": "^4.6.14",
+    "ora": "^8.1.1",
+    "p-retry": "^6.2.1",
+    "picocolors": "^1.1.1",
+    "zod": "^3.24.1"
+  },
+  "optionalDependencies": {
+    "better-sqlite3": "^11.7.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.10.5",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "esbuild"
+    ]
+  }
+}
