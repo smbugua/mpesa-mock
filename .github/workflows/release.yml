@@ -43,21 +43,10 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  npm:
-    runs-on: ubuntu-latest
-    needs: docker
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          registry-url: https://registry.npmjs.org
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - run: pnpm publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+# npm publish is intentionally handled manually:
+#   pnpm publish --otp=<6-digit-2fa-code>
+# Reason: the npm account has 2FA and granular/publish tokens keep 404-ing in CI
+# (likely a wrong-account or scope issue). Docker (above) ships hands-off on tag push.
+# To re-enable CI publish later: regenerate NPM_TOKEN as a Classic Automation
+# token under the smbugua npm account, restore the npm job below, and verify
+# with a v0.x.0 bump.
