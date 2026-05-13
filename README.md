@@ -137,6 +137,14 @@ example in another, three commands to a callback in your code.
 - [Express](./examples/node-express/) — minimal Node app
 - [Next.js](./examples/nextjs/) — App Router with API route handlers
 - [Python Flask](./examples/python-flask/) — proves it's HTTP, not framework-coupled
+- [Callback sink](./examples/callback-sink/) — 90-line stdlib-only Python receiver. Point any callback at it to see what mpesa-mock delivers — no app required.
+
+### "What URL do I put in `CallBackURL`?"
+
+The endpoint of **your app** that you want mpesa-mock to POST the result to.
+Same shape as production Daraja — only the base URL changes between mock,
+sandbox, and prod. If you don't have an app yet, run the
+[callback sink](./examples/callback-sink/) to see the payload that will arrive.
 
 ## What it doesn't do
 
